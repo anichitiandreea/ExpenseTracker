@@ -1,6 +1,4 @@
-﻿using expense_tracker_backend.Domain.Domains;
-using expense_tracker_backend.Domain.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace expense_tracker_backend.Domain

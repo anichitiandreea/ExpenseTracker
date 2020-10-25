@@ -29,6 +29,20 @@ namespace expense_tracker_backend.Controllers
             return Ok(categories);
         }
 
+        [HttpGet]
+        [Route("categories/{id}")]
+        public async Task<ActionResult> GetByIdAsync(Guid id)
+        {
+            var category = await categoryService.GetByIdAsync(id);
+
+            if (category is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(category);
+        }
+
         [HttpPost]
         [Route("categories")]
         public async Task<ActionResult> CreateAsync([FromBody] Category category)

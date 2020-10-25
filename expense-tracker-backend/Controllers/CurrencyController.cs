@@ -1,5 +1,6 @@
 ﻿using expense_tracker_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace expense_tracker_backend.Controllers
@@ -25,6 +26,19 @@ namespace expense_tracker_backend.Controllers
             }
 
             return Ok(currencies);
+        }
+
+        [Route("currencies/{id}")]
+        public async Task<ActionResult> GetByIdAsync(Guid id)
+        {
+            var currency = await currencyService.GetByIdAsync(id);
+
+            if (currency is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(currency);
         }
     }
 }

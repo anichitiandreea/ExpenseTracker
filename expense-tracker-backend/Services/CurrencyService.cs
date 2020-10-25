@@ -4,7 +4,6 @@ using expense_tracker_backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace expense_tracker_backend.Services
@@ -21,6 +20,12 @@ namespace expense_tracker_backend.Services
         public async Task<List<Currency>> GetAllAsync()
         {
             return await context.Currencies.ToListAsync();
+        }
+
+        public async Task<Currency> GetByIdAsync(Guid id)
+        {
+            return await context.Currencies
+                .FirstOrDefaultAsync(currency => currency.Id == id);
         }
     }
 }

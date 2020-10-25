@@ -1,6 +1,7 @@
 ﻿using expense_tracker_backend.Domain;
 using expense_tracker_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace expense_tracker_backend.Controllers
@@ -55,6 +56,32 @@ namespace expense_tracker_backend.Controllers
             await categoryService.CreateAsync(category);
 
             return StatusCode(201, category);
+        }
+
+        [HttpPut]
+        [Route("categories")]
+        public async Task<ActionResult> UpdateAsync([FromBody] Category category)
+        {
+            if (category is null)
+            {
+                return BadRequest();
+            }
+
+            var oldCategory = await categoryService.GetByIdAsync(category.Id);
+
+            if (oldCategory is null)
+            {
+                return NotFound();
+            }
+
+            oldCategory.Name = category.Name;
+            oldCategory.Icon = category.Icon;
+            oldCategory.IconColor = category.IconColor;
+            oldCategory.CurrencyId = category.CurrencyId;
+
+            await categoryService.UpdateAsync(oldCategory);
+
+            return Ok(oldCategory);
         }
     }
 }

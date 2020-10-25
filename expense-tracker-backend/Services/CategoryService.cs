@@ -35,5 +35,12 @@ namespace expense_tracker_backend.Services
 
             await context.SaveChangesAsync();
         }
+
+        public async Task UpdateAsync(Category category)
+        {
+            context.Categories.Update(category);
+
+            await context.SaveChangesAsync();
+        }
     }
 }

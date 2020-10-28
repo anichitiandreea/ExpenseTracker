@@ -10,6 +10,7 @@ using Xunit;
 
 namespace Tests.Controllers
 {
+    [Trait("xUnit", "Controller | Account")]
     public class AccountControllerTest
     {
         private readonly Mock<IAccountService> mockAccountService;
@@ -21,6 +22,8 @@ namespace Tests.Controllers
             accountController = new AccountController(mockAccountService.Object);
         }
 
+        [Fact]
+        [Trait("HttpVerb", "GET")]
         public async Task GivenGetAllAsyncWhenDataExistsThenReturnsData()
         {
             // Arrange

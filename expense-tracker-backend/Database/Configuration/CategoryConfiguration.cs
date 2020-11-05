@@ -10,10 +10,6 @@ namespace expense_tracker_backend.Database.Configuration
         {
             builder.HasKey(category => category.Id);
 
-            builder
-                .HasMany(category => category.Transactions)
-                .WithOne()
-                .HasForeignKey(transaction => transaction.CategoryId);
         }
     }
 }

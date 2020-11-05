@@ -9,7 +9,9 @@ namespace expense_tracker_backend.Domain
         public DateTime TransactionDate { get; set; }
         public double Amount { get; set; }
         public string Note { get; set; }
-        public Guid CategoryId { get; set; }
         public Guid AccountId { get; set; }
+        public Guid CategoryId { get; set; }
+        public Category Category { get; set; }
+        public Account Account { get; set; }
     }
 }

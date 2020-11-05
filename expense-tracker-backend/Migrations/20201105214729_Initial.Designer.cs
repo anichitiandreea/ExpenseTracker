@@ -10,7 +10,7 @@ using expense_tracker_backend.Database;
 namespace expense_tracker_backend.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20201016185528_Initial")]
+    [Migration("20201105214729_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -29,6 +29,15 @@ namespace expense_tracker_backend.Migrations
 
                     b.Property<double>("Amount")
                         .HasColumnType("double precision");
+
+                    b.Property<Guid>("CurrencyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Icon")
+                        .HasColumnType("text");
+
+                    b.Property<string>("IconColor")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -63,8 +72,6 @@ namespace expense_tracker_backend.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CurrencyId");
 
                     b.ToTable("Categories");
                 });
@@ -101,14 +108,14 @@ namespace expense_tracker_backend.Migrations
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Note")
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<byte>("TransactionType")
                         .HasColumnType("smallint");
@@ -122,24 +129,15 @@ namespace expense_tracker_backend.Migrations
                     b.ToTable("Transactions");
                 });
 
-            modelBuilder.Entity("expense_tracker_backend.Domain.Category", b =>
-                {
-                    b.HasOne("expense_tracker_backend.Domain.Domains.Currency", null)
-                        .WithMany("Categories")
-                        .HasForeignKey("CurrencyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("expense_tracker_backend.Domain.Transaction", b =>
                 {
-                    b.HasOne("expense_tracker_backend.Domain.Account", null)
+                    b.HasOne("expense_tracker_backend.Domain.Account", "Account")
                         .WithMany("Transactions")
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("expense_tracker_backend.Domain.Category", null)
+                    b.HasOne("expense_tracker_backend.Domain.Category", "Category")
                         .WithMany("Transactions")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)

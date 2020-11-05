@@ -106,14 +106,14 @@ namespace expense_tracker_backend.Migrations
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Note")
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<byte>("TransactionType")
                         .HasColumnType("smallint");
@@ -129,13 +129,13 @@ namespace expense_tracker_backend.Migrations
 
             modelBuilder.Entity("expense_tracker_backend.Domain.Transaction", b =>
                 {
-                    b.HasOne("expense_tracker_backend.Domain.Account", null)
+                    b.HasOne("expense_tracker_backend.Domain.Account", "Account")
                         .WithMany("Transactions")
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("expense_tracker_backend.Domain.Category", null)
+                    b.HasOne("expense_tracker_backend.Domain.Category", "Category")
                         .WithMany("Transactions")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)

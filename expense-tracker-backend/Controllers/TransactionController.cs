@@ -3,6 +3,7 @@ using expense_tracker_backend.Services.Interfaces;
 using expense_tracker_backend.Transfer;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -22,14 +23,37 @@ namespace expense_tracker_backend.Controllers
         [Route("transactions")]
         public async Task<ActionResult> GetAllAsync()
         {
-            var transactions = await transactionService.GetAllAsync();
-
-            if(transactions is null)
+            try
             {
-                return NotFound();
-            }
+                var transactions = await transactionService.GetAllAsync();
 
-            return Ok(transactions);
+                if (transactions is null)
+                {
+                    return NotFound();
+                }
+
+                var transactionResponse = transactions.Select(x => new TransactionResponse
+                {
+                    TransactionDate = x.TransactionDate,
+                    TransactionType = x.TransactionType,
+                    Amount = x.Amount,
+                    Note = x.Note,
+                    CategoryName = x.Category.Name,
+                    AccountName = x.Account.Name
+                })
+                .ToList();
+
+                var transactionGroup = transactionResponse.GroupBy(
+                    t => t.TransactionDate,
+                    t => t,
+                    (date, transactions) => new { TransactionDate = date, Transactions = transactions.ToList() });
+
+                return Ok(transactionGroup);
+            }
+            catch(Exception exception)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, exception);
+            }
         }
 
         [HttpPost]
@@ -50,7 +74,7 @@ namespace expense_tracker_backend.Controllers
                     Amount = Convert.ToDouble(transactionRequest.Amount),
                     Note = transactionRequest.Note,
                     AccountId = transactionRequest.AccountId,
-                    CategoryId = transactionRequest.CategoryId
+                    CategoryId =  transactionRequest.CategoryId
                 };
 
                 await transactionService.CreateAsync(transaction);

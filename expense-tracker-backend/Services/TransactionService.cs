@@ -3,6 +3,7 @@ using expense_tracker_backend.Domain;
 using expense_tracker_backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace expense_tracker_backend.Services
@@ -18,7 +19,11 @@ namespace expense_tracker_backend.Services
 
         public async Task<List<Transaction>> GetAllAsync()
         {
-            return await context.Transactions.ToListAsync();
+            return await context.Transactions
+                .Include(t => t.Account)
+                .Include(t => t.Category)
+                .OrderByDescending(t => t.TransactionDate)
+                .ToListAsync();
         }
 
         public async Task CreateAsync(Transaction transaction)

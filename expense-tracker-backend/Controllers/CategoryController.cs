@@ -2,6 +2,7 @@
 using expense_tracker_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace expense_tracker_backend.Controllers
@@ -20,68 +21,96 @@ namespace expense_tracker_backend.Controllers
         [Route("categories")]
         public async Task<ActionResult> GetAllAsync()
         {
-            var categories = await categoryService.GetAllAsync();
-
-            if(categories is null)
+            try
             {
-                return NotFound();
-            }
+                var categories = await categoryService.GetAllAsync();
 
-            return Ok(categories);
+                if (categories is null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(categories);
+            }
+            catch (Exception exception)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, exception);
+            }
         }
 
         [HttpGet]
         [Route("categories/{id}")]
         public async Task<ActionResult> GetByIdAsync(Guid id)
         {
-            var category = await categoryService.GetByIdAsync(id);
-
-            if (category is null)
+            try
             {
-                return NotFound();
-            }
+                var category = await categoryService.GetByIdAsync(id);
 
-            return Ok(category);
+                if (category is null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(category);
+            }
+            catch (Exception exception)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, exception);
+            }
         }
 
         [HttpPost]
         [Route("categories")]
         public async Task<ActionResult> CreateAsync([FromBody] Category category)
         {
-            if(category is null)
+            try
             {
-                return BadRequest();
+                if (category is null)
+                {
+                    return BadRequest();
+                }
+
+                await categoryService.CreateAsync(category);
+
+                return StatusCode(201, category);
             }
-
-            await categoryService.CreateAsync(category);
-
-            return StatusCode(201, category);
+            catch (Exception exception)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, exception);
+            }
         }
 
         [HttpPut]
         [Route("categories")]
         public async Task<ActionResult> UpdateAsync([FromBody] Category category)
         {
-            if (category is null)
+            try
             {
-                return BadRequest();
+                if (category is null)
+                {
+                    return BadRequest();
+                }
+
+                var oldCategory = await categoryService.GetByIdAsync(category.Id);
+
+                if (oldCategory is null)
+                {
+                    return NotFound();
+                }
+
+                oldCategory.Name = category.Name;
+                oldCategory.Icon = category.Icon;
+                oldCategory.IconColor = category.IconColor;
+                oldCategory.CurrencyId = category.CurrencyId;
+
+                await categoryService.UpdateAsync(oldCategory);
+
+                return Ok(oldCategory);
             }
-
-            var oldCategory = await categoryService.GetByIdAsync(category.Id);
-
-            if (oldCategory is null)
+            catch (Exception exception)
             {
-                return NotFound();
+                return StatusCode((int)HttpStatusCode.InternalServerError, exception);
             }
-
-            oldCategory.Name = category.Name;
-            oldCategory.Icon = category.Icon;
-            oldCategory.IconColor = category.IconColor;
-            oldCategory.CurrencyId = category.CurrencyId;
-
-            await categoryService.UpdateAsync(oldCategory);
-
-            return Ok(oldCategory);
         }
     }
 }

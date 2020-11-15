@@ -3,6 +3,7 @@ using expense_tracker_backend.Services.Interfaces;
 using expense_tracker_backend.Transfer;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace expense_tracker_backend.Controllers
@@ -21,51 +22,72 @@ namespace expense_tracker_backend.Controllers
         [Route("accounts")]
         public async Task<ActionResult> GetAllAsync()
         {
-            var accounts = await accountService.GetAllAsync();
-
-            if (accounts is null)
+            try
             {
-                return NotFound();
-            }
+                var accounts = await accountService.GetAllAsync();
 
-            return Ok(accounts);
+                if (accounts is null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(accounts);
+            }
+            catch (Exception exception)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, exception);
+            }
         }
 
         [HttpGet]
         [Route("accounts/{id}")]
         public async Task<ActionResult> GetByIdAsync(Guid id)
         {
-            var account = await accountService.GetByIdAsync(id);
-
-            if (account is null)
+            try
             {
-                return NotFound();
-            }
+                var account = await accountService.GetByIdAsync(id);
 
-            return Ok(account);
+                if (account is null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(account);
+            }
+            catch (Exception exception)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, exception);
+            }
         }
 
         [HttpPost]
         [Route("accounts")]
         public async Task<ActionResult> CreateAsync([FromBody] AccountRequest accountRequest)
         {
-            if (accountRequest is null)
+            try
             {
-                return BadRequest();
+                if (accountRequest is null)
+                {
+                    return BadRequest();
+                }
+
+                var account = new Account
+                {
+                    Name = accountRequest.Name,
+                    Icon = accountRequest.Icon,
+                    IconColor = accountRequest.IconColor,
+                    Amount = Convert.ToDouble(accountRequest.Amount),
+                    CurrencyId = accountRequest.CurrencyId
+                };
+
+                await accountService.CreateAsync(account);
+
+                return StatusCode(201, account);
             }
-
-            var account = new Account
+            catch (Exception exception)
             {
-                Name = accountRequest.Name,
-                Icon = accountRequest.Icon,
-                IconColor = accountRequest.IconColor,
-                Amount = Convert.ToDouble(accountRequest.Amount),
-                CurrencyId = accountRequest.CurrencyId
-            };
-
-            await accountService.CreateAsync(account);
-
-            return StatusCode(201, account);
+                return StatusCode((int)HttpStatusCode.InternalServerError, exception);
+            }
         }
     }
 }

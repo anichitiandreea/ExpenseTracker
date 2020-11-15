@@ -25,21 +25,20 @@ namespace expense_tracker_backend.Services
         public async Task<Category> GetByIdAsync(Guid id)
         {
             return await context.Categories
-                .FirstOrDefaultAsync(category => category.Id == id
-                && !category.IsDeleted);
+                .FirstOrDefaultAsync(category =>
+                    category.Id == id
+                    && !category.IsDeleted);
         }
 
         public async Task CreateAsync(Category category)
         {
             await context.Categories.AddAsync(category);
-
             await context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Category category)
         {
             context.Categories.Update(category);
-
             await context.SaveChangesAsync();
         }
     }

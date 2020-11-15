@@ -32,14 +32,23 @@ namespace expense_tracker_backend.Controllers
                     return NotFound();
                 }
 
-                var transactionResponse = transactions.Select(x => new TransactionResponse
+                var transactionResponse = transactions.Select(transaction => new TransactionResponse
                 {
-                    TransactionDate = x.TransactionDate,
-                    TransactionType = x.TransactionType,
-                    Amount = x.Amount,
-                    Note = x.Note,
-                    CategoryName = x.Category.Name,
-                    AccountName = x.Account.Name
+                    Id = transaction.Id,
+                    TransactionDate = transaction.TransactionDate,
+                    TransactionType = transaction.TransactionType,
+                    Amount = transaction.Amount,
+                    Note = transaction.Note,
+                    Category = new CategoryResponse() {
+                        Name = transaction.Category.Name,
+                        Icon = transaction.Category.Icon,
+                        IconColor = transaction.Category.IconColor
+                    },
+                    Account = new AccountResponse() {
+                        Name = transaction.Account.Name,
+                        Icon = transaction.Account.Icon,
+                        IconColor = transaction.Account.IconColor
+                    }
                 })
                 .ToList();
 
@@ -50,7 +59,51 @@ namespace expense_tracker_backend.Controllers
 
                 return Ok(transactionGroup);
             }
-            catch(Exception exception)
+            catch (Exception exception)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, exception);
+            }
+        }
+
+        [HttpGet]
+        [Route("transactions/{id}")]
+        public async Task<IActionResult> GetByIdAsync(Guid id)
+        {
+            try
+            {
+                var transaction = await transactionService.GetByIdAsync(id);
+
+                if (transaction is null)
+                {
+                    return NotFound();
+                }
+
+                var transactionResponse = new TransactionResponse
+                {
+                    Id = transaction.Id,
+                    TransactionDate = transaction.TransactionDate,
+                    TransactionType = transaction.TransactionType,
+                    Amount = transaction.Amount,
+                    Note = transaction.Note,
+                    Category = new CategoryResponse()
+                    {
+                        Id = transaction.Category.Id,
+                        Name = transaction.Category.Name,
+                        Icon = transaction.Category.Icon,
+                        IconColor = transaction.Category.IconColor
+                    },
+                    Account = new AccountResponse()
+                    {
+                        Id = transaction.Account.Id,
+                        Name = transaction.Account.Name,
+                        Icon = transaction.Account.Icon,
+                        IconColor = transaction.Account.IconColor
+                    }
+                };
+
+                return Ok(transactionResponse);
+            }
+            catch (Exception exception)
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, exception);
             }
@@ -81,7 +134,23 @@ namespace expense_tracker_backend.Controllers
 
                 return StatusCode(201, transaction);
             }
-            catch(Exception exception)
+            catch (Exception exception)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, exception);
+            }
+        }
+
+        [HttpPut]
+        [Route("transactions")]
+        public async Task<IActionResult> UpdateAsync(Transaction transaction)
+        {
+            try
+            {
+                await transactionService.UpdateAsync(transaction);
+
+                return Ok();
+            }
+            catch (Exception exception)
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, exception);
             }

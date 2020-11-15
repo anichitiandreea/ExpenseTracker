@@ -25,14 +25,14 @@ namespace expense_tracker_backend.Services
         public async Task<Account> GetByIdAsync(Guid id)
         {
             return await context.Accounts
-                .FirstOrDefaultAsync(account => account.Id == id
-                && account.IsDeleted == false);
+                .FirstOrDefaultAsync(account =>
+                    account.Id == id
+                    && account.IsDeleted == false);
         }
 
         public async Task CreateAsync(Account account)
         {
             await context.Accounts.AddAsync(account);
-
             await context.SaveChangesAsync();
         }
     }

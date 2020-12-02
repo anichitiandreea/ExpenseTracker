@@ -38,6 +38,7 @@ namespace expense_tracker_backend.Controllers
                     TransactionDate = transaction.TransactionDate,
                     TransactionType = transaction.TransactionType,
                     Amount = transaction.Amount,
+                    CurrencyName = transaction.CurrencyName,
                     Note = transaction.Note,
                     Category = new CategoryResponse() {
                         Name = transaction.Category.Name,
@@ -84,6 +85,7 @@ namespace expense_tracker_backend.Controllers
                     TransactionDate = transaction.TransactionDate,
                     TransactionType = transaction.TransactionType,
                     Amount = transaction.Amount,
+                    CurrencyName = transaction.CurrencyName,
                     Note = transaction.Note,
                     Category = new CategoryResponse()
                     {
@@ -109,6 +111,35 @@ namespace expense_tracker_backend.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("categories/{categoryId}/transactions/total-expense")]
+        public async Task<ActionResult> GetMonthExpenseAsync([FromRoute] Guid categoryId, DateTime? fromDate, DateTime? toDate)
+        {
+            try
+            {
+                double categoryExpense = 0;
+                var transactions = await transactionService.GetByCategoryIdAsync(categoryId, fromDate, toDate);
+
+                if (transactions is null)
+                {
+                    return NotFound();
+                }
+
+                transactions
+                    .ForEach(transaction =>
+                    {
+                        categoryExpense += transaction.Amount;
+                    });
+
+                return Ok(categoryExpense);
+
+            }
+            catch (Exception exception)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, exception);
+            }
+        }
+
         [HttpPost]
         [Route("transactions")]
         public async Task<ActionResult> CreateAsync([FromBody] TransactionRequest transactionRequest)
@@ -127,7 +158,8 @@ namespace expense_tracker_backend.Controllers
                     Amount = Convert.ToDouble(transactionRequest.Amount),
                     Note = transactionRequest.Note,
                     AccountId = transactionRequest.AccountId,
-                    CategoryId =  transactionRequest.CategoryId
+                    CategoryId =  transactionRequest.CategoryId,
+                    CurrencyName = transactionRequest.CurrencyName
                 };
 
                 await transactionService.CreateAsync(transaction);

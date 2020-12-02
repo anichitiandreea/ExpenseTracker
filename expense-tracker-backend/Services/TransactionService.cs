@@ -37,6 +37,17 @@ namespace expense_tracker_backend.Services
                     && !transaction.IsDeleted);
         }
 
+        public async Task<List<Transaction>> GetByCategoryIdAsync(Guid categoryId, DateTime? fromDate, DateTime? toDate)
+        {
+            return await context.Transactions
+                .Where(transaction =>
+                    transaction.CategoryId == categoryId
+                    && transaction.TransactionDate >= fromDate
+                    && transaction.TransactionDate < toDate
+                    && !transaction.IsDeleted)
+                .ToListAsync();
+        }
+
         public async Task CreateAsync(Transaction transaction)
         {
             await context.Transactions.AddAsync(transaction);

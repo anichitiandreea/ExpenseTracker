@@ -12,5 +12,6 @@ namespace expense_tracker_backend.Services.Interfaces
         Task<List<Transaction>> GetByCategoryIdAsync(Guid categoryId, DateTime? fromDate, DateTime? toDate);
         Task CreateAsync(Transaction transaction);
         Task UpdateAsync(Transaction transaction);
+        Task DeleteAsync(Transaction transaction);
     }
 }

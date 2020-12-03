@@ -1,8 +1,10 @@
-﻿using expense_tracker_backend.Controllers;
+﻿using AutoFixture;
+using expense_tracker_backend.Controllers;
 using expense_tracker_backend.Domain;
 using expense_tracker_backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -39,6 +41,77 @@ namespace Tests.Controllers
             mockTransactionService.VerifyAll();
             var apiResponse = Assert.IsType<OkObjectResult>(result);
             Assert.Equal(apiResponse.StatusCode, (int)HttpStatusCode.OK);
+        }
+
+        [Fact]
+        [Trait("HttpVerb", "GET")]
+        public async Task GivenDeleteAsyncWhenDataExistsThanReturnData()
+        {
+            // Arrange
+            var fixture = new Fixture();
+            var transaction = fixture.Build<Transaction>()
+                .Without(transaction => transaction.Account)
+                .Without(transaction => transaction.Category)
+                .Create();
+            var id = fixture.Create<Guid>();
+            mockTransactionService
+                .Setup(_ => _.GetByIdAsync(id))
+                .ReturnsAsync(transaction)
+                .Verifiable();
+
+            // Act
+            var result = await transactionController.DeleteAsync(id);
+
+            // Assert
+            mockTransactionService.VerifyAll();
+            var apiResponse = Assert.IsType<OkResult>(result);
+            Assert.Equal(apiResponse.StatusCode, (int)HttpStatusCode.OK);
+        }
+
+        [Fact]
+        [Trait("HttpVerb", "GET")]
+        public async Task GivenDeleteAsyncWhenNoDataFoundThanHandleGracefully()
+        {
+            // Arrange
+            var fixture = new Fixture();
+            var transaction = fixture.Build<Transaction>()
+                .Without(transaction => transaction.Account)
+                .Without(transaction => transaction.Category)
+                .Create();
+            var id = fixture.Create<Guid>();
+            mockTransactionService
+                .Setup(_ => _.GetByIdAsync(id))
+                .ReturnsAsync(It.IsAny<Transaction>())
+                .Verifiable();
+
+            // Act
+            var result = await transactionController.DeleteAsync(id);
+
+            // Assert
+            mockTransactionService.VerifyAll();
+            var apiResponse = Assert.IsType<NotFoundResult>(result);
+            Assert.Equal(apiResponse.StatusCode, (int)HttpStatusCode.NotFound);
+        }
+
+        [Fact]
+        [Trait("HttpVerb", "GET")]
+        public async Task GivenDeleteAsyncWhenExceptionOccursThanHandleGracefully()
+        {
+            // Arrange
+            var fixture = new Fixture();
+            var id = fixture.Create<Guid>();
+            mockTransactionService
+                .Setup(_ => _.GetByIdAsync(id))
+                .Throws<Exception>()
+                .Verifiable();
+
+            // Act
+            var result = await transactionController.DeleteAsync(id);
+
+            // Assert
+            mockTransactionService.VerifyAll();
+            var apiResponse = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(apiResponse.StatusCode, (int)HttpStatusCode.InternalServerError);
         }
     }
 }

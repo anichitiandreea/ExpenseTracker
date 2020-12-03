@@ -187,5 +187,29 @@ namespace expense_tracker_backend.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, exception);
             }
         }
+
+        [HttpDelete]
+        [Route("transactions")]
+        public async Task<ActionResult> DeleteAsync(Guid id)
+        {
+            try
+            {
+                var transaction = await transactionService.GetByIdAsync(id);
+
+                if (transaction is null)
+                {
+                    return NotFound();
+                }
+
+                await transactionService.DeleteAsync(transaction);
+
+                return Ok();
+            }
+            catch (Exception exception)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, exception);
+            }
+        }
+
     }
 }

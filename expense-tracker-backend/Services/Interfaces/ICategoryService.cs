@@ -11,5 +11,6 @@ namespace expense_tracker_backend.Services.Interfaces
         Task<Category> GetByIdAsync(Guid id);
         Task CreateAsync(Category category);
         Task UpdateAsync(Category category);
+        Task DeleteAsync(Category category);
     }
 }

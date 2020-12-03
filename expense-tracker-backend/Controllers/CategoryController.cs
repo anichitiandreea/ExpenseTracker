@@ -112,5 +112,28 @@ namespace expense_tracker_backend.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, exception);
             }
         }
+
+        [HttpDelete]
+        [Route("categories")]
+        public async Task<ActionResult> DeleteAsync(Guid id)
+        {
+            try
+            {
+                var category = await categoryService.GetByIdAsync(id);
+
+                if (category is null)
+                {
+                    return NotFound();
+                }
+
+                await categoryService.DeleteAsync(category);
+
+                return Ok();
+            }
+            catch (Exception exception)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, exception);
+            }
+        }
     }
 }

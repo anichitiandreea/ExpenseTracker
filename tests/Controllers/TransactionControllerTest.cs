@@ -44,7 +44,7 @@ namespace Tests.Controllers
         }
 
         [Fact]
-        [Trait("HttpVerb", "GET")]
+        [Trait("HttpVerb", "DELETE")]
         public async Task GivenDeleteAsyncWhenDataExistsThanReturnData()
         {
             // Arrange
@@ -58,6 +58,9 @@ namespace Tests.Controllers
                 .Setup(_ => _.GetByIdAsync(id))
                 .ReturnsAsync(transaction)
                 .Verifiable();
+            mockTransactionService
+                .Setup(_ => _.DeleteAsync(transaction))
+                .Verifiable();
 
             // Act
             var result = await transactionController.DeleteAsync(id);
@@ -69,15 +72,11 @@ namespace Tests.Controllers
         }
 
         [Fact]
-        [Trait("HttpVerb", "GET")]
+        [Trait("HttpVerb", "DELETE")]
         public async Task GivenDeleteAsyncWhenNoDataFoundThanHandleGracefully()
         {
             // Arrange
             var fixture = new Fixture();
-            var transaction = fixture.Build<Transaction>()
-                .Without(transaction => transaction.Account)
-                .Without(transaction => transaction.Category)
-                .Create();
             var id = fixture.Create<Guid>();
             mockTransactionService
                 .Setup(_ => _.GetByIdAsync(id))
@@ -94,7 +93,7 @@ namespace Tests.Controllers
         }
 
         [Fact]
-        [Trait("HttpVerb", "GET")]
+        [Trait("HttpVerb", "DELETE")]
         public async Task GivenDeleteAsyncWhenExceptionOccursThanHandleGracefully()
         {
             // Arrange

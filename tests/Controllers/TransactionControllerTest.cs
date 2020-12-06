@@ -16,12 +16,13 @@ namespace Tests.Controllers
     public class TransactionControllerTest
     {
         private readonly Mock<ITransactionService> mockTransactionService;
+        private readonly Mock<IAccountService> mockAccountService;
         private readonly TransactionController transactionController;
 
         public TransactionControllerTest()
         {
             mockTransactionService = new Mock<ITransactionService>();
-            transactionController = new TransactionController(mockTransactionService.Object);
+            transactionController = new TransactionController(mockTransactionService.Object, mockAccountService.Object);
         }
 
         [Fact]

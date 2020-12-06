@@ -13,10 +13,12 @@ namespace expense_tracker_backend.Controllers
     public class TransactionController : ControllerBase
     {
         private readonly ITransactionService transactionService;
+        private readonly IAccountService accountService;
 
-        public TransactionController(ITransactionService transactionService)
+        public TransactionController(ITransactionService transactionService, IAccountService accountService)
         {
             this.transactionService = transactionService;
+            this.accountService = accountService;
         }
 
         [HttpGet]
@@ -161,6 +163,8 @@ namespace expense_tracker_backend.Controllers
                     CategoryId =  transactionRequest.CategoryId,
                     CurrencyName = transactionRequest.CurrencyName
                 };
+
+                transactionService.TransactionCreated += accountService.UpdateAccountAmountAsync;
 
                 await transactionService.CreateAsync(transaction);
 

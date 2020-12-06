@@ -1,5 +1,6 @@
 ﻿using expense_tracker_backend.Database;
 using expense_tracker_backend.Domain;
+using expense_tracker_backend.Events;
 using expense_tracker_backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -12,6 +13,7 @@ namespace expense_tracker_backend.Services
     public class TransactionService : ITransactionService
     {
         private readonly DatabaseContext context;
+        public event Func<object, TransactionCreatedEventArgs, Task> TransactionCreated;
 
         public TransactionService(DatabaseContext context)
         {
@@ -52,6 +54,13 @@ namespace expense_tracker_backend.Services
         {
             await context.Transactions.AddAsync(transaction);
             await context.SaveChangesAsync();
+
+            TransactionCreatedEventArgs args = new TransactionCreatedEventArgs
+            {
+                Transaction = transaction
+            };
+
+            TransactionCreated?.Invoke(this, args);
         }
 
         public async Task UpdateAsync(Transaction transaction)

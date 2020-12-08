@@ -77,7 +77,8 @@ namespace expense_tracker_backend.Controllers
                     Icon = accountRequest.Icon,
                     IconColor = accountRequest.IconColor,
                     Amount = Convert.ToDouble(accountRequest.Amount),
-                    CurrencyId = accountRequest.CurrencyId
+                    CurrencyId = accountRequest.CurrencyId,
+                    CurrencyName = accountRequest.CurrencyName
                 };
 
                 await accountService.CreateAsync(account);

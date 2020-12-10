@@ -134,7 +134,6 @@ namespace expense_tracker_backend.Controllers
                     });
 
                 return Ok(categoryExpense);
-
             }
             catch (Exception exception)
             {

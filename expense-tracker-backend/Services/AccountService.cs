@@ -6,9 +6,7 @@ using expense_tracker_backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using static expense_tracker_backend.Services.TransactionService;
 
 namespace expense_tracker_backend.Services
 {
@@ -37,6 +35,12 @@ namespace expense_tracker_backend.Services
         public async Task CreateAsync(Account account)
         {
             await context.Accounts.AddAsync(account);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(Account account)
+        {
+            context.Accounts.Update(account);
             await context.SaveChangesAsync();
         }
 

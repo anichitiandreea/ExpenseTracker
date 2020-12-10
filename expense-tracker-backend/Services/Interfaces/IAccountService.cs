@@ -11,6 +11,7 @@ namespace expense_tracker_backend.Services.Interfaces
         Task<List<Account>> GetAllAsync();
         Task<Account> GetByIdAsync(Guid id);
         Task CreateAsync(Account account);
+        Task UpdateAsync(Account account);
         Task UpdateAccountAmountAsync(object sender, TransactionCreatedEventArgs e);
     }
 }

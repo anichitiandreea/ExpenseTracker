@@ -1,6 +1,8 @@
-﻿using expense_tracker_backend.Controllers;
+﻿using AutoFixture;
+using expense_tracker_backend.Controllers;
 using expense_tracker_backend.Domain;
 using expense_tracker_backend.Services.Interfaces;
+using expense_tracker_backend.Transfer;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System.Collections.Generic;
@@ -38,6 +40,30 @@ namespace Tests.Controllers
             // Assert
             mockAccountService.VerifyAll();
             var apiResponse = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal(apiResponse.StatusCode, (int)HttpStatusCode.OK);
+        }
+
+        [Fact]
+        [Trait("HttpVerb", "GET")]
+        public async Task GivenUpdateAsyncWhenDataExistsThenReturnsData()
+        {
+            // Arrange
+            var fixture = new Fixture();
+            var accountRequest = fixture.Create<AccountRequest>();
+            accountRequest.Amount = "223";
+            var account = fixture.Build<Account>()
+                .Without(account => account.Transactions)
+                .Create();
+            mockAccountService
+                .Setup(_ => _.UpdateAsync(It.IsAny<Account>()))
+                .Verifiable();
+
+            // Act
+            var result = await accountController.UpdateAsync(accountRequest);
+
+            // Assert
+            mockAccountService.VerifyAll();
+            var apiResponse = Assert.IsType<OkResult>(result);
             Assert.Equal(apiResponse.StatusCode, (int)HttpStatusCode.OK);
         }
     }

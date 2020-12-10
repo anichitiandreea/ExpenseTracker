@@ -90,5 +90,37 @@ namespace expense_tracker_backend.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, exception);
             }
         }
+
+        [HttpPut]
+        [Route("accounts")]
+        public async Task<ActionResult> UpdateAsync([FromBody] AccountRequest accountRequest)
+        {
+            try
+            {
+                if (accountRequest is null)
+                {
+                    return BadRequest();
+                }
+
+                var account = new Account
+                {
+                    Id = accountRequest.Id,
+                    Name = accountRequest.Name,
+                    Icon = accountRequest.Icon,
+                    IconColor = accountRequest.IconColor,
+                    Amount = Convert.ToDouble(accountRequest.Amount),
+                    CurrencyId = accountRequest.CurrencyId,
+                    CurrencyName = accountRequest.CurrencyName
+                };
+
+                await accountService.UpdateAsync(account);
+
+                return Ok();
+            }
+            catch (Exception exception)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, exception);
+            }
+        }
     }
 }

@@ -62,5 +62,11 @@ namespace expense_tracker_backend.Services
             context.Accounts.Update(account);
             await context.SaveChangesAsync();
         }
+
+        public async Task DeleteAsync(Account account)
+        {
+            context.Accounts.Remove(account);
+            await context.SaveChangesAsync();
+        }
     }
 }

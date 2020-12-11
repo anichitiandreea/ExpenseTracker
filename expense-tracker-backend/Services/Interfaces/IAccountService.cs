@@ -13,5 +13,6 @@ namespace expense_tracker_backend.Services.Interfaces
         Task CreateAsync(Account account);
         Task UpdateAsync(Account account);
         Task UpdateAccountAmountAsync(object sender, TransactionCreatedEventArgs e);
+        Task DeleteAsync(Account account);
     }
 }

@@ -213,6 +213,5 @@ namespace expense_tracker_backend.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, exception);
             }
         }
-
     }
 }

@@ -23,6 +23,7 @@ namespace expense_tracker_backend
             services.AddScoped<ICurrencyService, CurrencyService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<ITransactionService, TransactionService>();
+            services.AddScoped<IStatisticsService, StatisticsService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

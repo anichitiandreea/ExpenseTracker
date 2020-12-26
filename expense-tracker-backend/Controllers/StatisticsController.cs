@@ -41,7 +41,12 @@ namespace expense_tracker_backend.Controllers
                         }
                     });
 
-                    return new { CategoryName = category.Name, CategoryAmount = totalAmount };
+                    return new
+                    {
+                        CategoryName = category.Name,
+                        CategoryAmount = totalAmount,
+                        CategoryCurrency = category.CurrencyName
+                    };
                 })
                 .ToList();
 

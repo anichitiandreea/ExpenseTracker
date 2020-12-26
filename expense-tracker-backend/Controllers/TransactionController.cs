@@ -23,11 +23,11 @@ namespace expense_tracker_backend.Controllers
 
         [HttpGet]
         [Route("transactions")]
-        public async Task<ActionResult> GetAllAsync()
+        public async Task<ActionResult> GetAllAsync([FromQuery] int pageNumber, int pageSize)
         {
             try
             {
-                var transactions = await transactionService.GetAllAsync();
+                var transactions = await transactionService.GetAllAsync(pageNumber, pageSize);
 
                 if (transactions is null)
                 {
@@ -167,7 +167,7 @@ namespace expense_tracker_backend.Controllers
 
                 await transactionService.CreateAsync(transaction);
 
-                return StatusCode(201, transaction);
+                return StatusCode(201);
             }
             catch (Exception exception)
             {

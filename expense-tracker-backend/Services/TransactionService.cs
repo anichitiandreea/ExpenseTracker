@@ -20,12 +20,14 @@ namespace expense_tracker_backend.Services
             this.context = context;
         }
 
-        public async Task<List<Transaction>> GetAllAsync()
+        public async Task<List<Transaction>> GetAllAsync(int pageNumber, int pageSize)
         {
             return await context.Transactions
                 .Include(transaction => transaction.Account)
                 .Include(transaction => transaction.Category)
                 .OrderByDescending(transaction => transaction.TransactionDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
         }
 

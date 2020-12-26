@@ -31,12 +31,12 @@ namespace Tests.Controllers
         {
             // Arrange
             mockTransactionService
-                .Setup(_ => _.GetAllAsync())
+                .Setup(_ => _.GetAllAsync(1, 10))
                 .ReturnsAsync(new List<Transaction>())
                 .Verifiable();
 
             // Act
-            var result = await transactionController.GetAllAsync();
+            var result = await transactionController.GetAllAsync(1, 10);
 
             // Assert
             mockTransactionService.VerifyAll();

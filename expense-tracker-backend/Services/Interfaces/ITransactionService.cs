@@ -10,7 +10,7 @@ namespace expense_tracker_backend.Services.Interfaces
     public interface ITransactionService
     {
         event Func<object, TransactionCreatedEventArgs, Task> TransactionCreated;
-        Task<List<Transaction>> GetAllAsync();
+        Task<List<Transaction>> GetAllAsync(int pageNumber, int pageSize);
         Task<Transaction> GetByIdAsync(Guid id);
         Task<List<Transaction>> GetByCategoryIdAsync(Guid categoryId, DateTime? fromDate, DateTime? toDate);
         Task CreateAsync(Transaction transaction);

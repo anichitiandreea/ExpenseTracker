@@ -1,7 +1,7 @@
 ﻿using AutoFixture;
-using expense_tracker_backend.Controllers;
-using expense_tracker_backend.Domain;
-using expense_tracker_backend.Services.Interfaces;
+using ExpenseTracker.Controllers;
+using ExpenseTracker.Domain;
+using ExpenseTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;

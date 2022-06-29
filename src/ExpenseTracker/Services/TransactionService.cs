@@ -34,6 +34,7 @@ namespace ExpenseTracker.Services
         public async Task<Transaction> GetByIdAsync(Guid id)
         {
             return await context.Transactions
+                .AsNoTracking()
                 .Include(transaction => transaction.Account)
                 .Include(transaction => transaction.Category)
                 .FirstOrDefaultAsync(transaction =>
@@ -48,6 +49,16 @@ namespace ExpenseTracker.Services
                     transaction.CategoryId == categoryId
                     && transaction.TransactionDate >= fromDate
                     && transaction.TransactionDate < toDate
+                    && !transaction.IsDeleted)
+                .ToListAsync();
+        }
+
+        public async Task<List<Transaction>> GetByCategoryIdAsync(Guid categoryId)
+        {
+            return await context.Transactions
+                .Include(transaction => transaction.Account)
+                .Where(transaction =>
+                    transaction.CategoryId == categoryId
                     && !transaction.IsDeleted)
                 .ToListAsync();
         }

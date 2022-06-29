@@ -63,6 +63,12 @@ namespace ExpenseTracker.Services
             await context.SaveChangesAsync();
         }
 
+        public async Task UpdateRangeAsync(HashSet<Account> accounts)
+        {
+            context.Accounts.UpdateRange(accounts);
+            await context.SaveChangesAsync();
+        }
+
         public async Task DeleteAsync(Account account)
         {
             context.Accounts.Remove(account);

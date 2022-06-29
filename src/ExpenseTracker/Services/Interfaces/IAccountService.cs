@@ -13,6 +13,7 @@ namespace ExpenseTracker.Services.Interfaces
         Task CreateAsync(Account account);
         Task UpdateAsync(Account account);
         Task UpdateAccountAmountAsync(object sender, TransactionCreatedEventArgs e);
+        Task UpdateRangeAsync(HashSet<Account> accounts);
         Task DeleteAsync(Account account);
     }
 }

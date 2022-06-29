@@ -45,6 +45,7 @@ namespace ExpenseTracker.Controllers
                     {
                         CategoryName = category.Name,
                         CategoryAmount = totalAmount,
+                        CurrencyId = category.CurrencyId,
                         CategoryCurrency = category.CurrencyName
                     };
                 })

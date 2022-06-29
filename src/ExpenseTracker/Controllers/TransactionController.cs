@@ -1,4 +1,5 @@
 ﻿using ExpenseTracker.Domain;
+using ExpenseTracker.Domain.Enums;
 using ExpenseTracker.Services.Interfaces;
 using ExpenseTracker.Transfer;
 using Microsoft.AspNetCore.Mvc;
@@ -163,9 +164,19 @@ namespace ExpenseTracker.Controllers
                     CurrencyName = transactionRequest.CurrencyName
                 };
 
-                transactionService.TransactionCreated += accountService.UpdateAccountAmountAsync;
+                var account = await accountService.GetByIdAsync(transaction.AccountId);
+
+                if (transaction.TransactionType == TransactionType.Expense)
+                {
+                    account.Amount -= transaction.Amount;
+                }
+                else
+                {
+                    account.Amount += transaction.Amount;
+                }
 
                 await transactionService.CreateAsync(transaction);
+                await accountService.UpdateAsync(account);
 
                 return StatusCode(201);
             }
@@ -181,7 +192,23 @@ namespace ExpenseTracker.Controllers
         {
             try
             {
+                double transactionAmountDifference = 0;
+                var originalTransaction = await transactionService.GetByIdAsync(transaction.Id);
+
+                if (transaction.Amount > originalTransaction.Amount)
+                {
+                    transactionAmountDifference = transaction.Amount - originalTransaction.Amount;
+                }
+                else
+                {
+                    transactionAmountDifference = originalTransaction.Amount - transaction.Amount;
+                }
+
+                var account = await accountService.GetByIdAsync(transaction.AccountId);
+                account.Amount -= transactionAmountDifference;
+
                 await transactionService.UpdateAsync(transaction);
+                await accountService.UpdateAsync(account);
 
                 return Ok();
             }
@@ -204,7 +231,10 @@ namespace ExpenseTracker.Controllers
                     return NotFound();
                 }
 
+                transaction.Account.Amount += transaction.Amount;
+
                 await transactionService.DeleteAsync(transaction);
+                await accountService.UpdateAsync(transaction.Account);
 
                 return Ok();
             }

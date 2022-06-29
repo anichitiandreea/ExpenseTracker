@@ -2,6 +2,7 @@
 using ExpenseTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -11,10 +12,16 @@ namespace ExpenseTracker.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService categoryService;
+        private readonly ITransactionService transactionService;
+        private readonly IAccountService accountService;
 
-        public CategoryController(ICategoryService categoryService)
+        public CategoryController(ICategoryService categoryService,
+            ITransactionService transactionService,
+            IAccountService accountService)
         {
             this.categoryService = categoryService;
+            this.transactionService = transactionService;
+            this.accountService = accountService;
         }
 
         [HttpGet]
@@ -120,13 +127,22 @@ namespace ExpenseTracker.Controllers
             try
             {
                 var category = await categoryService.GetByIdAsync(id);
+                var accounts = new HashSet<Account>();
 
                 if (category is null)
                 {
                     return NotFound();
                 }
 
+                var transactions = await transactionService.GetByCategoryIdAsync(category.Id);
+                transactions.ForEach(transaction =>
+                {
+                    transaction.Account.Amount += transaction.Amount;
+                    accounts.Add(transaction.Account);
+                });
+
                 await categoryService.DeleteAsync(category);
+                await accountService.UpdateRangeAsync(accounts);
 
                 return Ok();
             }

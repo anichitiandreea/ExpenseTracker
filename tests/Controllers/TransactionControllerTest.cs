@@ -22,6 +22,7 @@ namespace Tests.Controllers
         public TransactionControllerTest()
         {
             mockTransactionService = new Mock<ITransactionService>();
+            mockAccountService = new Mock<IAccountService>();
             transactionController = new TransactionController(mockTransactionService.Object, mockAccountService.Object);
         }
 
@@ -55,6 +56,10 @@ namespace Tests.Controllers
                 .Without(transaction => transaction.Category)
                 .Create();
             var id = fixture.Create<Guid>();
+            var account = fixture.Build<Account>()
+                .Without(account => account.Transactions)
+                .Create();
+            transaction.Account = account;
             mockTransactionService
                 .Setup(_ => _.GetByIdAsync(id))
                 .ReturnsAsync(transaction)

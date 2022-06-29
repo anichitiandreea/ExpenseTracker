@@ -5,6 +5,7 @@ using ExpenseTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -15,12 +16,19 @@ namespace Tests.Controllers
     public class CategoryControllerTest
     {
         private readonly Mock<ICategoryService> mockCategoryService;
+        private readonly Mock<ITransactionService> mockTransactionService;
+        private readonly Mock<IAccountService> mockAccountService;
         private readonly CategoryController categoryController;
 
         public CategoryControllerTest()
         {
             mockCategoryService = new Mock<ICategoryService>();
-            categoryController = new CategoryController(mockCategoryService.Object);
+            mockAccountService = new Mock<IAccountService>();
+            mockTransactionService = new Mock<ITransactionService>();
+            categoryController = new CategoryController(
+                mockCategoryService.Object,
+                mockTransactionService.Object,
+                mockAccountService.Object);
         }
 
         [Fact]
@@ -36,6 +44,10 @@ namespace Tests.Controllers
             mockCategoryService
                 .Setup(_ => _.GetByIdAsync(id))
                 .ReturnsAsync(category)
+                .Verifiable();
+            mockTransactionService
+                .Setup(_ => _.GetByCategoryIdAsync(category.Id))
+                .ReturnsAsync(new List<Transaction>())
                 .Verifiable();
             mockCategoryService
                 .Setup(_ => _.DeleteAsync(category))
